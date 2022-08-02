@@ -18,6 +18,8 @@ export default function App() {
         
         <div className="bio">
           I'm Sarah, a computer science undergrad at UBC and growth manager at KLAP Finance. I'm passionate about DeFi and the future of Web3!
+          <br/> <br/>
+          Here you can interact with Wave Portal, a simple smart contract built on the Ethereum blockchain with Solidity.
         </div>
 
         <button className="waveButton" onClick={wave}>

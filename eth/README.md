@@ -1,15 +1,5 @@
-# Basic Sample Hardhat Project
+# Wave Portal Backend
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+This project demonstrates a basic Hardhat use case. Comes with a simple Solidity contract to track the number of times it's been waved at, with scripts to deploy and test the project.
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+Rinkeby contract address: 0x634228FB84f67884184759072db7D50D542BD844
