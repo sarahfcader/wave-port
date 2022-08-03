@@ -29,25 +29,40 @@
 .bio {
   text-align: center;
   padding: 20px;
-  color: rgb(90, 47, 21);
+  color: black;
 }
 
 button {
-  border: 1px solid rgb(215, 141, 22);
+  border: 1px solid rgb(57, 150, 226);
   border-radius: 8px;
-  color: rgb(90, 47, 21);
+  color: rgb(18, 84, 155);
   background-color: rgb(255, 254, 252);
   text-align: center;
   font-size: 16px;
   margin: 0px 25% 20px 25%;
   padding: 15px 32px;
-  max-height: 50px;
+  max-height: 60px;
   overflow: auto;
+  word-wrap: break-word;
+  box-shadow: 2px 3px;
 }
 
-button:hover {
-  background-color: rgb(238, 230, 220);
+
+button:hover:enabled {
+  background-color: rgb(234, 236, 238);
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  box-shadow: none;
+  opacity: 0.5;
+}
+
+p {
+  font-size: 12px;
+  color:rgb(18, 84, 155);
+  text-align: center;
 }
 
 img {

@@ -6,11 +6,10 @@ import abi from "./utils/WavePortal.json";
 export default function App() {
 
   const [ currentAccount, setCurrentAccount] = useState("");
+  const [ loading, setLoading ] = useState(false);
   // testnet contract address 
   const contractAddress = "0xCfEEA80a9E6181082A6E40F014557D3B6A6D5b91";
   const contractABI = abi.abi;
-
-  const [ loading, setLoading ] = useState(false);
 
   // TODO: mining loading bar
   async function wave() {
@@ -100,21 +99,24 @@ export default function App() {
         </div>
         
         <div className="bio">
-          I'm Sarah, a computer science undergrad at UBC and growth manager at KLAP Finance. I'm passionate about DeFi and the future of Web3!
+          I'm Sarah, a computer science undergrad at UBC and community growth manager at KLAP Finance. I'm passionate about the future of Web3!
           <br/> <br/>
           Here you can interact with Wave Portal, a simple smart contract built with Solidity on the Ethereum blockchain.
         </div>
 
+        {!currentAccount ? <p>Connect your MetaMask wallet first!</p> : null}
         {/* TODO: greyed out until wallet connected, add alternate emoji buttons*/}
-        <button className={"waveButton" + (loading ? "loadingButton" : "notLoadingButton")} onClick={wave}>
+        <button disabled={loading || !currentAccount} className="wave-button" onClick={wave}>
           {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"}/> : "Wave at Me"}
         </button>
 
         {/* Render connect wallet button if there is no current account */}
         {/* TODO: make this into a connect/disconnect wallet button*/}
-        <button className={"connectWalletButton " + (currentAccount ? "walletConnected" : "walletNotConnected")} onClick={connectWallet}>
-          Connect Wallet
-        </button>
+
+          <button className="connect-wallet-button" onClick={connectWallet}>
+            {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
+          </button>
+
 
         {/* TODO: Animated list of all previous messages */}
         <div className="previousWaves">
