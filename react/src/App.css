@@ -4,7 +4,7 @@
   background-size: 60%;
   justify-content: center;
   width: 100%;
-  margin-top: 64px;
+  min-height: 100vh;
 }
 
 .dataContainer {
@@ -13,9 +13,9 @@
   justify-content: center;
   max-width: 600px;
   min-height: 80vh;
-  background-color: rgb(255, 254, 252);
-  border-left: 1px solid rgb(213, 201, 179);
-  border-right: 1px solid rgb(213, 201, 179);
+  background-color: rgb(251, 251, 251);
+  border-left: 1px solid rgb(251, 226, 35);
+  border-right: 1px solid rgb(251, 226, 35);
 }
 
 .header {
@@ -46,6 +46,14 @@ button {
 button:hover {
   background-color: rgb(238, 230, 220);
   cursor: pointer;
+}
+
+.previousWaves {
+  text-align: center;
+  font-size: 20px;
+  padding: 20px;
+  font-weight: 600;
+  color: black;
 }
 
 .footer {

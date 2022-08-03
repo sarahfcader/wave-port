@@ -13,20 +13,22 @@ contract WavePortal {
         console.log("WavePortal contract constructed.");
     }
 
-    function waveAtPortal() public {
+    function wave() public {
         totalWaves++;
 
         // Increment waves for msg.sender
-        uint wavesForSender = wavesPerUser[msg.sender];
-        wavesForSender++;
-        wavesPerUser[msg.sender] = wavesForSender;
-
-        console.log("%s has waved! They've waved %d time(s).", msg.sender, wavesForSender);
+        wavesPerUser[msg.sender] += 1;
+        console.log("%s has waved!", msg.sender);
     }
 
     function getTotalWaves() public view returns (uint256) {
-        console.log("I've been waved at %d times.", totalWaves);
+        console.log("I've been waved at %d time(s).", totalWaves);
         return totalWaves;
+    }
+
+    function getWavesForSender() public view returns (uint256) {
+        console.log("%s has waved %d time(s)!", msg.sender, wavesPerUser[msg.sender]);
+        return wavesPerUser[msg.sender];
     }
 
 }

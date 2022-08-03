@@ -20,7 +20,7 @@ const main = async () => {
     wavecount = await waveContract.getTotalWaves();
     // return value (fulfilled value of promise) = await expression
 
-    let waveTxn = await waveContract.waveAtPortal();
+    let waveTxn = await waveContract.wave();
     await waveTxn.wait();
 
     waveCount = await waveContract.getTotalWaves();
