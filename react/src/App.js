@@ -10,9 +10,11 @@ export default function App() {
   const contractAddress = "0xCfEEA80a9E6181082A6E40F014557D3B6A6D5b91";
   const contractABI = abi.abi;
 
+  const [ loading, setLoading ] = useState(false);
+
+  // TODO: mining loading bar
   async function wave() {
     try {
-      // TODO: who is executing/paying for the wave? do they need to be connected?
       const { ethereum } = window;
 
       if (ethereum) {
@@ -21,20 +23,23 @@ export default function App() {
         const signer = provider.getSigner();
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let count = await wavePortalContract.getTotalWaves();
-        console.log("Total wave count: ", count.toNumber());
-
+        // TODO: optimize gas: remove console log calls in contract and front-end
+        // TODO: loading state if user cancels transaction?
+        setLoading(true);
         const waveTxn = await wavePortalContract.wave();
         console.log("Mining...", waveTxn.hash);
         await waveTxn.wait();
+        setLoading(false);
         console.log("Mined --", waveTxn.hash);
 
+        let count = await wavePortalContract.getTotalWaves();
         console.log("Total wave count: ", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist.")
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }
 
@@ -101,8 +106,8 @@ export default function App() {
         </div>
 
         {/* TODO: greyed out until wallet connected, add alternate emoji buttons*/}
-        <button className="waveButton" onClick={wave}>
-          Wave at Me
+        <button className={"waveButton" + (loading ? "loadingButton" : "notLoadingButton")} onClick={wave}>
+          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"}/> : "Wave at Me"}
         </button>
 
         {/* Render connect wallet button if there is no current account */}

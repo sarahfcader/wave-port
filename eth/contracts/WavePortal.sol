@@ -14,7 +14,7 @@ contract WavePortal {
     }
 
     function wave() public {
-        totalWaves++;
+        totalWaves+=1;
 
         // Increment waves for msg.sender
         wavesPerUser[msg.sender] += 1;

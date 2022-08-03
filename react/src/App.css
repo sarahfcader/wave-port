@@ -37,15 +37,22 @@ button {
   border-radius: 8px;
   color: rgb(90, 47, 21);
   background-color: rgb(255, 254, 252);
-  padding: 15px 32px;
   text-align: center;
   font-size: 16px;
   margin: 0px 25% 20px 25%;
+  padding: 15px 32px;
+  max-height: 50px;
+  overflow: auto;
 }
 
 button:hover {
   background-color: rgb(238, 230, 220);
   cursor: pointer;
+}
+
+img {
+  height: 20px;
+  margin: 0;
 }
 
 .previousWaves {
@@ -62,4 +69,3 @@ button:hover {
   color: rgb(90, 47, 21);
   padding-bottom: 20px;
 }
-
