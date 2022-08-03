@@ -23,7 +23,6 @@ export default function App() {
         const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
 
         // TODO: optimize gas: remove console log calls in contract and front-end
-        // TODO: loading state if user cancels transaction?
         setLoading(true);
         const waveTxn = await wavePortalContract.wave();
         console.log("Mining...", waveTxn.hash);
@@ -105,15 +104,12 @@ export default function App() {
         </div>
 
         {!currentAccount ? <p>Connect your MetaMask wallet first!</p> : null}
-        {/* TODO: greyed out until wallet connected, add alternate emoji buttons*/}
         <button disabled={loading || !currentAccount} className="wave-button" onClick={wave}>
           {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"}/> : "Wave at Me"}
         </button>
 
         {/* Render connect wallet button if there is no current account */}
-        {/* TODO: make this into a connect/disconnect wallet button*/}
-
-          <button className="connect-wallet-button" onClick={connectWallet}>
+          <button className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount ? connectWallet : null}>
             {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
           </button>
 

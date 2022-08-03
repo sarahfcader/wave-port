@@ -5,6 +5,8 @@
   justify-content: center;
   width: 100%;
   min-height: 100vh;
+
+  color: black;
 }
 
 .dataContainer {
@@ -23,13 +25,11 @@
   font-size: 32px;
   padding: 20px;
   font-weight: 600;
-  color: black;
 }
 
 .bio {
   text-align: center;
   padding: 20px;
-  color: black;
 }
 
 button {
@@ -41,15 +41,24 @@ button {
   font-size: 16px;
   margin: 0px 25% 20px 25%;
   padding: 15px 32px;
-  max-height: 60px;
-  overflow: auto;
-  word-wrap: break-word;
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   box-shadow: 2px 3px;
 }
 
+button.connect-wallet-button.no-hover {
+  background-color:rgb(0, 97, 200);
+  color: rgb(247, 247, 247);
+  box-shadow: none;
+  animation: 0.2s ease-in 0s 1 widen;
+}
 
-button:hover:enabled {
+
+button:enabled:not(.no-hover):hover {
   background-color: rgb(234, 236, 238);
+  transition: background-color 0.4s;
   cursor: pointer;
 }
 
@@ -75,12 +84,19 @@ img {
   font-size: 20px;
   padding: 20px;
   font-weight: 600;
-  color: black;
 }
 
 .footer {
   text-align: center;
   font-size: 12px;
-  color: rgb(90, 47, 21);
   padding-bottom: 20px;
+}
+
+@keyframes widen {
+  0% {
+      background-color: white;
+  }
+  100% {
+    background-color:rgb(0, 97, 200);
+  }
 }
