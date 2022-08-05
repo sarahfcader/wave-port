@@ -16,14 +16,30 @@ const main = async () => {
     console.log("Contract deployed to:", waveContract.address);
     console.log("Contract deployed by:", owner.address);
 
+    // Constructor
     let waveCount;
-    wavecount = await waveContract.getTotalWaves();
-    // return value (fulfilled value of promise) = await expression
+    waveCount = await waveContract.getTotalWaves(); // return value (fulfilled value of promise) = await expression
+    console.log("Total waves: ", waveCount.toNumber());
 
-    let waveTxn = await waveContract.wave();
+    // Message wave
+    let waveTxn = await waveContract.wave("Hello I am message");
+    await waveTxn.wait();
+    waveTxn = await waveContract.connect(randomPerson).wave("I AM ALSO MESSAGE");
     await waveTxn.wait();
 
+    // Get waves for senders
+    let wavesForSender;
+    wavesForSender = await waveContract.getWavesForSender();
+    console.log(owner.address," has waved ", wavesForSender.toNumber(), " times.");
+    wavesForSender = await waveContract.connect(randomPerson).getWavesForSender();
+    console.log(randomPerson.address," has waved ", wavesForSender.toNumber(), " times.");
+
+    // Total waves
+    let allWaves = await waveContract.getAllWaves();
     waveCount = await waveContract.getTotalWaves();
+
+    console.log("Total waves: ", waveCount.toNumber());
+    console.log(allWaves);
 };
 
 const runMain = async () => {
@@ -31,6 +47,7 @@ const runMain = async () => {
         await main();
         process.exit(0);
     } catch (error) {
+        console.log(error);
         process.exit(1); //Exit with error message
     }
 };

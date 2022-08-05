@@ -8,8 +8,9 @@ export default function App() {
   const [ currentAccount, setCurrentAccount] = useState("");
   const [ totalWaves, setTotalWaves ] = useState(0);
   const [ loading, setLoading ] = useState(false);
+  const [ allWaves, setAllWaves ] = useState([]);
   // testnet contract address 
-  const contractAddress = "0xCfEEA80a9E6181082A6E40F014557D3B6A6D5b91";
+  const contractAddress = "0x95f4a8953E983AB45068CAe472E5C6b87864023C";
   const contractABI = abi.abi;
 
   /* FUNCTIONS */
@@ -42,11 +43,15 @@ export default function App() {
     }
   }
 
-  // TODO: HOW TO DISPLAY THIS COUNTER WITHOUT READING FROM METAMASK NODE?
+  // Get all the Wave structs
+  async function getAllWaves() {
+
+  }
+
+  // Get the total count of waves -- doesn't require MetaMask
   async function getTotalWaves() {
     try {
       const url = process.env.REACT_APP_NODE_URL;
-      console.log(url);
       const provider = new ethers.providers.JsonRpcProvider(url);
       const wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider);
       let count = await wavePortalContract.getTotalWaves();

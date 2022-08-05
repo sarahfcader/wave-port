@@ -3,4 +3,4 @@
 Deployment: https://wave-portal-wheat.vercel.app/
 
 Rinkeby testnet contract address: 
-0xCfEEA80a9E6181082A6E40F014557D3B6A6D5b91
+0x95f4a8953E983AB45068CAe472E5C6b87864023C
