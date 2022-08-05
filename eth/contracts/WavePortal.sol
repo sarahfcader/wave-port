@@ -22,7 +22,6 @@ contract WavePortal {
         console.log("WavePortal contract constructed.");
     }
 
-
     function wave(string memory _message) public {
         totalWaves+=1;
         wavesPerUser[msg.sender] += 1;

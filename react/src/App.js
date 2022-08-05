@@ -26,13 +26,14 @@ export default function App() {
 
         // TODO: optimize gas: remove console log calls in contract and front-end
         setLoading(true);
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave("Hi! I'm a test. 👋");
         console.log("Mining...", waveTxn.hash);
         await waveTxn.wait();
         setLoading(false);
         console.log("Mined --", waveTxn.hash);
 
         let count = await wavePortalContract.getTotalWaves();
+        setTotalWaves(count.toNumber());
         console.log("Total wave count: ", count.toNumber());
       } else {
         console.log("Ethereum object doesn't exist.")
@@ -43,41 +44,47 @@ export default function App() {
     }
   }
 
-  // Get all the Wave structs
-  async function getAllWaves() {
-
-  }
-
-  // Get the total count of waves -- doesn't require MetaMask
-  async function getTotalWaves() {
+  // Get all the Wave structs and total waves
+  async function fetchDataViewsFromContract() {
     try {
       const url = process.env.REACT_APP_NODE_URL;
       const provider = new ethers.providers.JsonRpcProvider(url);
       const wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider);
-      let count = await wavePortalContract.getTotalWaves();
-      
-      console.log(count.toNumber());
-      setTotalWaves(count.toNumber());
-      
+      const waveCount = await wavePortalContract.getTotalWaves();
+      const allWaves = await wavePortalContract.getAllWaves();
+
+      let wavesTrim = [];
+      allWaves.forEach(wave => {
+        wavesTrim.push({
+          address: wave.waver,
+          timestamp: new Date(wave.timestamp * 1000),
+          message: wave.message
+        });
+      });
+
+      setTotalWaves(waveCount.toNumber());
+      setAllWaves(wavesTrim);
     } catch (error) {
       console.log(error);
     }
   }
 
-  // Listens for changes in the connected MetaMask accounts.
+  
+  // Checks if wallet is initally connected
+  // And makes a listener for changes in the connected MetaMask accounts.
   async function checkAccountChange() {
     const { ethereum } = window;
-    if (ethereum) {
-      // Listening to Event
-      ethereum.on('accountsChanged', accounts => {
-        if (accounts.length !== 0) {
-          const account = accounts[0];
-          setCurrentAccount(account);
-        } else {
-          setCurrentAccount("");
-          window.location.reload(false);
-        }})
-   }
+    if (!ethereum) {
+      alert("Get MetaMask!");
+      return;
+    }
+    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+    setCurrentAccount(accounts[0]);
+    // Create event listener
+    ethereum.on('accountsChanged', accounts => {
+      console.log(accounts[0])
+      setCurrentAccount(accounts[0]);
+    });
  }
 
   // Connects user's wallet when button clicked
@@ -99,9 +106,9 @@ export default function App() {
 
   // Checks for connected wallet after render/DOM update
   useEffect(() => {
+    fetchDataViewsFromContract();
     checkAccountChange();
-    getTotalWaves();
-  }, [])
+  }, [totalWaves]);
 
 
   return (
@@ -120,21 +127,28 @@ export default function App() {
 
         {!currentAccount ? <p>Connect your MetaMask wallet first!</p> : null}
         <button disabled={loading || !currentAccount} className="wave-button" onClick={wave}>
-          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"}/> : "Wave at Me"}
+          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt=""/> : "Wave at Me"}
         </button>
 
-        {/* Render connect wallet button if there is no current account */}
           <button className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount ? connectWallet : null}>
             {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
           </button>
 
 
         {/* TODO: Animated list of all previous messages */}
-        <div className="previousWaves">
         <p>I've been waved at {totalWaves} times. 😊</p>
-
-          Previous waves:
+        <div className="previousWaves">
+          Previous Waves
+          {allWaves.map((wave, index) => {
+          return (
+            <div key={index} className="waveListItem">
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>)
+          })}
         </div>
+
 
         <div className="footer"> 
           Sarah Cader © 2022
