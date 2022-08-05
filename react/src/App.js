@@ -6,12 +6,13 @@ import abi from "./utils/WavePortal.json";
 export default function App() {
 
   const [ currentAccount, setCurrentAccount] = useState("");
+  const [ totalWaves, setTotalWaves ] = useState(0);
   const [ loading, setLoading ] = useState(false);
   // testnet contract address 
   const contractAddress = "0xCfEEA80a9E6181082A6E40F014557D3B6A6D5b91";
   const contractABI = abi.abi;
 
-  // TODO: mining loading bar
+  /* FUNCTIONS */
   async function wave() {
     try {
       const { ethereum } = window;
@@ -41,30 +42,40 @@ export default function App() {
     }
   }
 
-  // Checks if MetaMask is found, and if user has connected a wallet account
-  async function checkIfWalletIsConnected() {
+  // TODO: HOW TO DISPLAY THIS COUNTER WITHOUT READING FROM METAMASK NODE?
+  async function getTotalWaves() {
     try {
-      const { ethereum } = window;
-      if (!ethereum) {
-        console.log("Make sure you use MetaMask!");
-      } else {
-        console.log("MetaMask found:", ethereum);
-      }
-
-      const accounts = await ethereum.request({method: "eth_accounts"});
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Found an authorized account:", account);
-        setCurrentAccount(account);
-      } else {
-        console.log("No authorized account found.")
-      }
+      const url = process.env.REACT_APP_NODE_URL;
+      console.log(url);
+      const provider = new ethers.providers.JsonRpcProvider(url);
+      const wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider);
+      let count = await wavePortalContract.getTotalWaves();
+      
+      console.log(count.toNumber());
+      setTotalWaves(count.toNumber());
+      
     } catch (error) {
       console.log(error);
     }
   }
 
+  // Listens for changes in the connected MetaMask accounts.
+  async function checkAccountChange() {
+    const { ethereum } = window;
+    if (ethereum) {
+      // Listening to Event
+      ethereum.on('accountsChanged', accounts => {
+        if (accounts.length !== 0) {
+          const account = accounts[0];
+          setCurrentAccount(account);
+        } else {
+          setCurrentAccount("");
+          window.location.reload(false);
+        }})
+   }
+ }
+
+  // Connects user's wallet when button clicked
   async function connectWallet() {
     try {
       const { ethereum } = window;
@@ -72,9 +83,7 @@ export default function App() {
         alert("Get MetaMask!");
         return;
       } 
-
       const accounts = await ethereum.request({ method: "eth_requestAccounts"});
-
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
@@ -85,7 +94,8 @@ export default function App() {
 
   // Checks for connected wallet after render/DOM update
   useEffect(() => {
-    checkIfWalletIsConnected();
+    checkAccountChange();
+    getTotalWaves();
   }, [])
 
 
@@ -116,6 +126,8 @@ export default function App() {
 
         {/* TODO: Animated list of all previous messages */}
         <div className="previousWaves">
+        <p>I've been waved at {totalWaves} times. 😊</p>
+
           Previous waves:
         </div>
 
