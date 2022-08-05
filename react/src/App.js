@@ -9,6 +9,7 @@ export default function App() {
   const [ totalWaves, setTotalWaves ] = useState(0);
   const [ loading, setLoading ] = useState(false);
   const [ allWaves, setAllWaves ] = useState([]);
+  const [ fetchingData, setFetchingData ] = useState([false]);
   // testnet contract address 
   const contractAddress = "0x95f4a8953E983AB45068CAe472E5C6b87864023C";
   const contractABI = abi.abi;
@@ -47,10 +48,12 @@ export default function App() {
   // Get all the Wave structs and total waves
   async function fetchDataViewsFromContract() {
     try {
+      setFetchingData(true);
       const url = process.env.REACT_APP_NODE_URL;
       const provider = new ethers.providers.JsonRpcProvider(url);
       const wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider);
       const waveCount = await wavePortalContract.getTotalWaves();
+      setTotalWaves(waveCount.toNumber());
       const allWaves = await wavePortalContract.getAllWaves();
 
       let wavesTrim = [];
@@ -61,8 +64,7 @@ export default function App() {
           message: wave.message
         });
       });
-
-      setTotalWaves(waveCount.toNumber());
+      setFetchingData(false);
       setAllWaves(wavesTrim);
     } catch (error) {
       console.log(error);
@@ -125,21 +127,22 @@ export default function App() {
           Here you can interact with Wave Portal, a simple smart contract built with Solidity on the Ethereum blockchain.
         </div>
 
-        {!currentAccount ? <p>Connect your MetaMask wallet first!</p> : null}
+        {!currentAccount&&!fetchingData ? <p>Connect your MetaMask wallet first!</p> : <p></p>}
+
         <button disabled={loading || !currentAccount} className="wave-button" onClick={wave}>
-          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt=""/> : "Wave at Me"}
+          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Wave at Me"}
         </button>
 
           <button className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount ? connectWallet : null}>
             {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
           </button>
 
-
-        {/* TODO: Animated list of all previous messages */}
-        <p>I've been waved at {totalWaves} times. 😊</p>
+        {fetchingData ? <p></p> : <p>I've been waved at {totalWaves} times. 😊</p>}
         <div className="previousWaves">
           Previous Waves
-          {allWaves.map((wave, index) => {
+          <br />
+          {fetchingData ? <img src={process.env.PUBLIC_URL + "/pulse.gif"} alt="" id="pulseLoad" /> : 
+          allWaves.map((wave, index) => {
           return (
             <div key={index} className="waveListItem">
               <div>Address: {wave.address}</div>
