@@ -200,7 +200,7 @@ export default function App() {
           {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Wave at Me 👋"}
         </button>
 
-          <button disabled={requestingMetaMask} className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount&&!requestingMetaMask ? connectWallet : null}>
+          <button disabled={requestingMetaMask} className={"connect-wallet-button " + (currentAccount ? "account-connected" : "")} onClick={!currentAccount&&!requestingMetaMask ? connectWallet : null}>
             {currentAccount ? "Connected: "+currentAccount : 
               (requestingMetaMask ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Connect Wallet")
             }
