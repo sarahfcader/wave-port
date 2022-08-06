@@ -9,13 +9,15 @@ export default function App() {
   const [ totalWaves, setTotalWaves ] = useState(0);
   const [ loading, setLoading ] = useState(false);
   const [ allWaves, setAllWaves ] = useState([]);
-  const [ fetchingData, setFetchingData ] = useState([false]);
+  const [ fetchingData, setFetchingData ] = useState(false);
+  const [ requestingMetaMask, setRequestingMetaMask ] = useState(false);
   const [ messageInput, setMessageInput ] = useState("");
   // testnet contract address 
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xa8Ffb1Fc712BE1c93ccBA39b4b439b35110421Be";
   const contractABI = abi.abi;
 
   /* FUNCTIONS */
+  // TODO: add some handling for <30 seconds waves
   async function wave() {
     try {
       const { ethereum } = window;
@@ -28,7 +30,7 @@ export default function App() {
 
         // TODO: optimize gas: remove console log calls in contract and front-end
         setLoading(true);
-        const waveTxn = await wavePortalContract.wave(messageInput);
+        const waveTxn = await wavePortalContract.wave(messageInput, { gasLimit: 300000 });
         console.log("Mining...", waveTxn.hash);
         await waveTxn.wait();
         setLoading(false);
@@ -47,7 +49,7 @@ export default function App() {
   }
 
   // Get all the Wave structs and total waves
-  async function fetchDataViewsFromContract() {
+  async function getAllWaves() {
     try {
       setFetchingData(true);
       const url = process.env.REACT_APP_NODE_URL;
@@ -56,7 +58,7 @@ export default function App() {
       const waveCount = await wavePortalContract.getTotalWaves();
       setTotalWaves(waveCount.toNumber());
       const allWaves = await wavePortalContract.getAllWaves();
-
+      
       let wavesTrim = [];
       allWaves.forEach(wave => {
         wavesTrim.push({
@@ -76,20 +78,35 @@ export default function App() {
   
   // Checks if wallet is initally connected
   // And makes a listener for changes in the connected MetaMask accounts.
-  async function checkAccountChange() {
-    const { ethereum } = window;
-    if (!ethereum) {
-      alert("Get MetaMask!");
-      return;
+  async function checkIfWalletConnected(ethereum) {
+    try {
+      if (!ethereum) {
+        return;
+      }
+
+      const accounts = await ethereum.request({ method: "eth_accounts" });
+
+      if (accounts.length !== 0) {
+        setCurrentAccount(accounts[0])
+      } else {
+        console.log("No authorized account found")
+      }
+    } catch (error) {
+      console.log(error);
     }
-    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-    setCurrentAccount(accounts[0]);
-    // Create event listener
-    ethereum.on('accountsChanged', accounts => {
-      console.log(accounts[0])
+  }
+
+  async function handleAccountsChanged(accounts) {
+
+    if (accounts.length === 0) {
+      // MetaMask is locked or the user has not connected any accounts
+      console.log('Please connect to MetaMask.');
+      setCurrentAccount("");
+    } else if (accounts[0] !== currentAccount) {
+      console.log("accounts changed:", accounts[0]);
       setCurrentAccount(accounts[0]);
-    });
- }
+    }
+  }
 
   // Connects user's wallet when button clicked
   async function connectWallet() {
@@ -99,9 +116,18 @@ export default function App() {
         alert("Get MetaMask!");
         return;
       } 
-      const accounts = await ethereum.request({ method: "eth_requestAccounts"});
-      console.log("Connected", accounts[0]);
-      setCurrentAccount(accounts[0]);
+      setRequestingMetaMask(true);
+
+      ethereum.request({ method: "eth_requestAccounts"})
+              .then((accounts) => {
+                setRequestingMetaMask(false);
+                console.log("Connected", accounts[0]);
+                setCurrentAccount(accounts[0]);
+              })
+              .catch((error) => {
+                setRequestingMetaMask(false);
+              });
+
     } catch (error) {
       console.log(error);
     }
@@ -111,11 +137,42 @@ export default function App() {
     setMessageInput(event.target.value);
   }
 
-  // Checks for connected wallet after render/DOM update
+  
   useEffect(() => {
-    fetchDataViewsFromContract();
-    checkAccountChange();
-  }, [totalWaves]);
+    const { ethereum } = window;
+    checkIfWalletConnected(ethereum);
+    getAllWaves();
+
+    let wavePortalContract;
+    function onNewWave(from, timestamp, message) {
+      console.log("NewWave event", from, timestamp, message);
+      setAllWaves(prevState => [
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+        ...prevState,
+      ]);
+    };
+
+    // Contract listener for new wave events
+    const url = process.env.REACT_APP_NODE_URL;
+    const provider = new ethers.providers.JsonRpcProvider(url);
+    wavePortalContract = new ethers.Contract(contractAddress, contractABI, provider);
+    wavePortalContract.on("NewWave", onNewWave);
+
+    // Sets up a listener for MetaMask account changes
+    ethereum.on('accountsChanged', handleAccountsChanged);
+
+    // Cleanup when unmounts (removed from DOM) + before the effect runs
+    return () => {
+      if (wavePortalContract) {
+        console.log("Unmounting");
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    }
+  }, []);
 
 
   return (
@@ -141,8 +198,10 @@ export default function App() {
           {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Wave at Me 👋"}
         </button>
 
-          <button className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount ? connectWallet : null}>
-            {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
+          <button disabled={requestingMetaMask} className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount&&!requestingMetaMask ? connectWallet : null}>
+            {currentAccount ? "Connected: "+currentAccount : 
+              (requestingMetaMask ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Connect Wallet")
+            }
           </button>
 
         {fetchingData ? <span></span> : <span>I've been waved at {totalWaves} times 🎉</span>}
