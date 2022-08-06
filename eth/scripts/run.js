@@ -9,7 +9,10 @@ const main = async () => {
     // Compile contract, generate files in artifacts
     const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
     // Hardhat creates local Ethereum network ('fresh blockchain') (later destroyed)
-    const waveContract = await waveContractFactory.deploy();
+    // Removes ETH from my wallet to fund the contract
+    const waveContract = await waveContractFactory.deploy({
+        value: hre.ethers.utils.parseEther("0.1"),
+      });
     // constructor runs after contract is deployed
     await waveContract.deployed();
 
@@ -19,13 +22,17 @@ const main = async () => {
     // Constructor
     let waveCount;
     waveCount = await waveContract.getTotalWaves(); // return value (fulfilled value of promise) = await expression
+    let contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
     console.log("Total waves: ", waveCount.toNumber());
+    console.log("Contract balance:", hre.ethers.utils.formatEther(contractBalance));
 
     // Message wave
     let waveTxn = await waveContract.wave("Hello I am message");
     await waveTxn.wait();
     waveTxn = await waveContract.connect(randomPerson).wave("I AM ALSO MESSAGE");
     await waveTxn.wait();
+    contractBalance = await hre.ethers.provider.getBalance(waveContract.address);
+    console.log("Contract balance:", hre.ethers.utils.formatEther(contractBalance));
 
     // Get waves for senders
     let wavesForSender;

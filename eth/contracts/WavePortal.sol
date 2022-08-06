@@ -18,17 +18,30 @@ contract WavePortal {
     mapping(address => uint) wavesPerUser;
     uint totalWaves; // Automatically initialized to 0
 
-    constructor() {
+    constructor() payable {
         console.log("WavePortal contract constructed.");
     }
 
     function wave(string memory _message) public {
         totalWaves+=1;
         wavesPerUser[msg.sender] += 1;
-        console.log("%s has waved with message %s", msg.sender, _message);
 
         waves.push(Wave(msg.sender, block.timestamp, _message));
         emit NewWave(msg.sender, block.timestamp, _message);
+
+        console.log("%s waved.", msg.sender);
+
+        uint256 prizeAmount = 0.0001 ether;
+        require(
+            prizeAmount <= address(this).balance,
+            "Trying to withdraw more money than the contract has."
+        );
+        /*require (
+            wavesPerUser[msg.sender] < 1,
+            "This wallet has already receieved a prize for waving!"
+        );*/
+        (bool success, ) = (msg.sender).call{value: prizeAmount}(""); //Sending money
+        require(success, "Failed to send ETH.");
     }
 
     function getTotalWaves() public view returns (uint256) {

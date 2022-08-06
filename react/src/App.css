@@ -1,6 +1,9 @@
 .mainContainer {
   display: flex;
   background-color: rgb(97, 107, 235);
+  background-image: url('wave.png');
+  background-blend-mode: overlay;
+  background-size: 300px;
   justify-content: center;
   width: 100%;
   min-height: 100vh;
@@ -14,8 +17,8 @@
   width: 800px;
   min-height: 80vh;
   background-color: rgb(251, 251, 251);
-  border-left: 1px solid rgb(251, 226, 35);
-  border-right: 1px solid rgb(251, 226, 35);
+  border-left: 1px solid rgb(57, 150, 226);
+  border-right: 1px solid rgb(57, 150, 226);
 }
 
 .header {

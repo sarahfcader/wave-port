@@ -12,7 +12,7 @@ export default function App() {
   const [ fetchingData, setFetchingData ] = useState([false]);
   const [ messageInput, setMessageInput ] = useState("");
   // testnet contract address 
-  const contractAddress = "0x95f4a8953E983AB45068CAe472E5C6b87864023C";
+  const contractAddress = "0xCC32E3E5a70C2064f4f9CF971C255435A2314E52";
   const contractABI = abi.abi;
 
   /* FUNCTIONS */
