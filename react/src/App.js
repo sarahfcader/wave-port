@@ -181,8 +181,8 @@ export default function App() {
 
       <div className="dataContainer">
         <div className="header">
+        <div style={{ margin: "10px auto 0 auto", width: "100px", backgroundColor: "#0061c8", height: "5px" }}></div>
           👋 Hello!
-          <div style={{ margin: "10px auto 0 auto", width: "100px", backgroundColor: "#0061c8", height: "5px" }}></div>
         </div>
         
         <div className="bio">
@@ -214,6 +214,7 @@ export default function App() {
         <a href="https://twitter.com/0xSarahlity" target="_blank" class="fa fa-twitter"></a>
         <a href="https://www.linkedin.com/in/sarah-cader-b52b8a1bb/" target="_blank" class="fa fa-linkedin"></a>
         </div>
+        <div style={{ margin: "20px auto 0 auto", width: "100px", backgroundColor: "#0061c8", height: "5px" }}></div>
         <div className="previousWaves">
           Previous Waves
           <br />
