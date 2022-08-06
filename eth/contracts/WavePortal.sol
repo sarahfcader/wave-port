@@ -15,33 +15,40 @@ contract WavePortal {
     }
 
     Wave[] waves;
-    mapping(address => uint) wavesPerUser;
+    mapping(address => uint256) lastWavedAt; //COOLDOWN address->time mapping
     uint totalWaves; // Automatically initialized to 0
+    uint256 private seed; // Random number generation
 
     constructor() payable {
         console.log("WavePortal contract constructed.");
+        seed = (block.timestamp + block.difficulty) % 100;
     }
 
     function wave(string memory _message) public {
+        require (
+            lastWavedAt[msg.sender] + 15 minutes < block.timestamp,
+            "Wait 15 minutes"
+        );
+
         totalWaves+=1;
-        wavesPerUser[msg.sender] += 1;
-
-        waves.push(Wave(msg.sender, block.timestamp, _message));
-        emit NewWave(msg.sender, block.timestamp, _message);
-
+        lastWavedAt[msg.sender] = block.timestamp;
         console.log("%s waved.", msg.sender);
 
-        uint256 prizeAmount = 0.0001 ether;
-        require(
-            prizeAmount <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
-        );
-        /*require (
-            wavesPerUser[msg.sender] < 1,
-            "This wallet has already receieved a prize for waving!"
-        );*/
-        (bool success, ) = (msg.sender).call{value: prizeAmount}(""); //Sending money
-        require(success, "Failed to send ETH.");
+        waves.push(Wave(msg.sender, block.timestamp, _message));
+        seed = (block.difficulty + block.timestamp + seed) % 100;
+        console.log("Random # generated: %d", seed);
+
+        if (seed < 30) { //50-50 chance, not true randomness
+            uint256 prizeAmount = 0.0001 ether;
+            require(
+                prizeAmount <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+            (bool success, ) = (msg.sender).call{value: prizeAmount}(""); //Sending money
+            require(success, "Failed to send ETH.");
+        }
+
+        emit NewWave(msg.sender, block.timestamp, _message);
     }
 
     function getTotalWaves() public view returns (uint256) {
@@ -51,9 +58,4 @@ contract WavePortal {
     function getAllWaves() public view returns (Wave[] memory) {
         return waves;
     }
-
-    function getWavesForSender() public view returns (uint256) {
-        return wavesPerUser[msg.sender];
-    }
-
 }
