@@ -10,6 +10,7 @@ export default function App() {
   const [ loading, setLoading ] = useState(false);
   const [ allWaves, setAllWaves ] = useState([]);
   const [ fetchingData, setFetchingData ] = useState([false]);
+  const [ messageInput, setMessageInput ] = useState("");
   // testnet contract address 
   const contractAddress = "0x95f4a8953E983AB45068CAe472E5C6b87864023C";
   const contractABI = abi.abi;
@@ -27,7 +28,7 @@ export default function App() {
 
         // TODO: optimize gas: remove console log calls in contract and front-end
         setLoading(true);
-        const waveTxn = await wavePortalContract.wave("Hi! I'm a test. 👋");
+        const waveTxn = await wavePortalContract.wave(messageInput);
         console.log("Mining...", waveTxn.hash);
         await waveTxn.wait();
         setLoading(false);
@@ -64,6 +65,7 @@ export default function App() {
           message: wave.message
         });
       });
+      wavesTrim = wavesTrim.reverse();
       setFetchingData(false);
       setAllWaves(wavesTrim);
     } catch (error) {
@@ -105,6 +107,9 @@ export default function App() {
     }
   }
 
+  function handleMessageUpdate(event) {
+    setMessageInput(event.target.value);
+  }
 
   // Checks for connected wallet after render/DOM update
   useEffect(() => {
@@ -122,34 +127,38 @@ export default function App() {
         </div>
         
         <div className="bio">
-          I'm Sarah, a computer science undergrad at UBC and community growth manager at KLAP Finance. I'm passionate about the future of Web3!
+          I'm Sarah, a computer science undergrad at UBC and community growth manager at KLAP Finance. I'm passionate about the future of Web3.
           <br/> <br/>
-          Here you can interact with Wave Portal, a simple smart contract built with Solidity on the Ethereum blockchain.
+          Here you can interact with Wave Portal, a simple smart contract built with Solidity on Ethereum. If you write me a quick message it will be preserved on the blockchain forever! 😊
         </div>
 
-        {!currentAccount&&!fetchingData ? <p>Connect your MetaMask wallet first!</p> : <p></p>}
+        {/* {value} == the value of the text box maps onto a state variable. onchange == the state variable is updated to reflect. event.target is the triggering element, event.target.value grabs user-inputted value */}
+        <textarea id="messageForm" onChange={handleMessageUpdate} autoFocus="autofocus" rows={5} cols="6" maxLength="200" placeholder="Type your message here..."></textarea>
+
+        {!currentAccount&&!fetchingData ? <span>Connect your MetaMask wallet first!</span> : null}
 
         <button disabled={loading || !currentAccount} className="wave-button" onClick={wave}>
-          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Wave at Me"}
+          {loading ? <img src={process.env.PUBLIC_URL + "/spinner.gif"} alt="" id="spinLoad"/> : "Wave at Me 👋"}
         </button>
 
           <button className={"connect-wallet-button " + (currentAccount ? "no-hover" : "")} onClick={!currentAccount ? connectWallet : null}>
             {currentAccount ? "Connected: "+currentAccount : "Connect Wallet"}
           </button>
 
-        {fetchingData ? <p></p> : <p>I've been waved at {totalWaves} times. 😊</p>}
+        {fetchingData ? <span></span> : <span>I've been waved at {totalWaves} times 🎉</span>}
         <div className="previousWaves">
           Previous Waves
           <br />
-          {fetchingData ? <img src={process.env.PUBLIC_URL + "/pulse.gif"} alt="" id="pulseLoad" /> : 
-          allWaves.map((wave, index) => {
+          {/* TODO: pagination/animation on load */}
+          {fetchingData ? <img src={process.env.PUBLIC_URL + "/pulse.gif"} alt="" id="pulseLoad" /> : null}
+          {allWaves.map((wave, index) => {
           return (
             <div key={index} className="waveListItem">
               <div>Address: {wave.address}</div>
               <div>Time: {wave.timestamp.toString()}</div>
               <div>Message: {wave.message}</div>
             </div>)
-          })}
+        })}
         </div>
 
 
