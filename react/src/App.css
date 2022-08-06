@@ -1,9 +1,11 @@
 .mainContainer {
   display: flex;
-  background-color: rgb(97, 107, 235);
-  background-image: url('wave.png');
-  background-blend-mode: overlay;
-  background-size: 300px;
+  background: rgb(26, 51, 108);
+  background-image: url('wave\ transparent.png');
+  background-blend-mode: soft-light;
+  background-size: 200px;
+  background-repeat: space;
+  background-attachment: fixed;
   justify-content: center;
   width: 100%;
   min-height: 100vh;
@@ -14,11 +16,13 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 800px;
-  min-height: 80vh;
+  margin: 40px 0px;
+  border-radius: 12px;
+  width: 750px;
   background-color: rgb(251, 251, 251);
-  border-left: 1px solid rgb(57, 150, 226);
+  border: 1px solid rgb(137, 155, 169);
   border-right: 1px solid rgb(57, 150, 226);
+  box-shadow: 10px 10px 20px rgb(22, 42, 91);
 }
 
 .header {
@@ -26,7 +30,7 @@
   font-size: 32px;
   padding: 20px;
   font-weight: 600;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .bio {
@@ -101,13 +105,19 @@ span {
 }
 
 .waveListItem {
+  background-image: url('wave\ transparent.png');
+  background-size: 70px;
+  background-repeat: no-repeat;
+  background-position-x: 90%;
+  background-position-y: 50%;
   font-size: 12px;
   justify-content: center;
   text-align: left;
   padding: 20px;
+  border-radius: 8px;
   border: 1px solid rgb(57, 150, 226);
   background-color: rgb(255, 254, 252);
-  margin: 10px 10%;
+  margin: 10px 15%;
   animation: 0.4s ease-out 0s 1 slideInList;
 }
 

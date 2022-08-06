@@ -181,6 +181,7 @@ export default function App() {
       <div className="dataContainer">
         <div className="header">
           👋 Hello!
+          <div style={{ marginTop:"10px", marginLeft:"44%", marginRight:"44%", backgroundColor: "#0061c8", height: "5px" }}></div>
         </div>
         
         <div className="bio">
@@ -213,9 +214,10 @@ export default function App() {
           {allWaves.map((wave, index) => {
           return (
             <div key={index} className="waveListItem">
-              <div>Address: {wave.address}</div>
-              <div>Time: {wave.timestamp.toString()}</div>
-              <div>Message: {wave.message}</div>
+              <div >From: {wave.address}</div>
+              <div style={{ color: "#3996E2", fontSize: "10px"}}>Time: {wave.timestamp.toString()}</div>
+              <br />
+              <div>{wave.message}</div>
             </div>)
         })}
         </div>
