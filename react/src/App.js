@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './App.css';
+
 import { ethers } from "ethers";
 import abi from "./utils/WavePortal.json";
 
@@ -181,7 +182,7 @@ export default function App() {
       <div className="dataContainer">
         <div className="header">
           👋 Hello!
-          <div style={{ marginTop:"10px", marginLeft:"44%", marginRight:"44%", backgroundColor: "#0061c8", height: "5px" }}></div>
+          <div style={{ margin: "10px auto 0 auto", width: "100px", backgroundColor: "#0061c8", height: "5px" }}></div>
         </div>
         
         <div className="bio">
@@ -205,7 +206,14 @@ export default function App() {
             }
           </button>
 
+        
+
         {fetchingData ? <span></span> : <span>I've been waved at {totalWaves} times 🎉</span>}
+        <div className="socialsButtons">
+        <a href="https://github.com/sarahfcader/wave-portal" target="_blank" class="fa fa-github"></a>
+        <a href="https://twitter.com/0xSarahlity" target="_blank" class="fa fa-twitter"></a>
+        <a href="https://www.linkedin.com/in/sarah-cader-b52b8a1bb/" target="_blank" class="fa fa-linkedin"></a>
+        </div>
         <div className="previousWaves">
           Previous Waves
           <br />
